@@ -1,0 +1,5 @@
+langchain_openai
+langchain_community
+python-dotenv
+streamlit
+psycopg2
