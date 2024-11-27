@@ -22,7 +22,7 @@ def execute_sql_query(query):
     try:
         return db.run(query)
     except Exception as e:
-        return f"error executing query{e}"
+        return f"error executing query: {e}"
     
 
 db = init_database()
@@ -31,70 +31,46 @@ sql_tool = Tool(
     name='SQLQueryTool',
     func=execute_sql_query,
     description="Use this tool to execute SQL queries on the database. Provide the query in plain English, and it will return the result"
-
 )
 
-llm=  ChatOpenAI(temperature=0, model='gpt-4-0613')
+llm = ChatOpenAI(temperature=0, model='gpt-4-0613')
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 agent = initialize_agent(
     tools=[sql_tool],
     llm=llm,
     agent=AgentType.OPENAI_FUNCTIONS,
-    memory = memory,
-    verbose = True
+    memory=memory,
+    verbose=True
 )
     
-
 st.set_page_config(page_title="AI_SQL_CHATBOT")
 st.header("Query Your Database")
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-MAX_EXCHANGES = 10  
-
-def is_conversation_limit_reached():
-    return len(st.session_state.chat_history) // 2 >= MAX_EXCHANGES
-
-
-
 user_query = st.chat_input("Ask any query to the database...")
 
 if user_query:
+    st.session_state.chat_history.append(('human', user_query))
+    memory.chat_memory.add_user_message(user_query)
 
-    if is_conversation_limit_reached():
-        st.error(f"Conversation limit of {MAX_EXCHANGES} exchanges reached. Please start a new session.")
+    with st.chat_message("human"):
+        st.markdown(user_query)
     
-    else:
-        st.session_state.chat_history.append(('human', user_query))
-        memory.chat_memory.add_user_message(user_query)
+    with st.chat_message('ai'):
+        with st.spinner('Processing...'):
+            try:
+                response = agent.invoke(user_query)
+                if isinstance(response, dict):
+                    ai_response = response.get('output', str(response))
+                else:
+                    ai_response = str(response)
+                st.session_state.chat_history.append(('ai', ai_response))
+                memory.chat_memory.add_ai_message(ai_response)
 
-        with st.chat_message("human"):
-            st.markdown(user_query)
-        
-        with st.chat_message('ai'):
-            with st.spinner('Processing...'):
-                try:
-                    response = agent.invoke(user_query)
-                    if isinstance(response, dict):
-                        ai_response= response.get('output', str(response))
-                    else:
-                        ai_response=str(response)
-                    st.session_state.chat_history.append(('ai', ai_response))
-                    memory.chat_memory.add_ai_message(ai_response)
+                st.markdown(ai_response)
 
-                    st.markdown(ai_response)
-
-                except Exception as e:
-                    st.error(f'Error: {e}')
-
-st.sidebar.write(f"Conversation Exchanges: {len(st.session_state.chat_history) // 2} / {MAX_EXCHANGES}")
-
-
-
-
-
-
-
-
+            except Exception as e:
+                st.error(f'Error: {e}')
