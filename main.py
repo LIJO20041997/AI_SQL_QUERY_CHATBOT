@@ -52,25 +52,47 @@ st.header("Query Your Database")
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
+MAX_EXCHANGES = 10  
+
+def is_conversation_limit_reached():
+    return len(st.session_state.chat_history) // 2 >= MAX_EXCHANGES
+
+
+
 user_query = st.chat_input("Ask any query to the database...")
 
 if user_query:
-    st.session_state.chat_history.append(('human', user_query))
-    with st.chat_message("human"):
-        st.markdown(user_query)
+
+    if is_conversation_limit_reached():
+        st.error(f"Conversation limit of {MAX_EXCHANGES} exchanges reached. Please start a new session.")
     
-    with st.chat_message('ai'):
-        with st.spinner('Processing...'):
-            try:
-                response = agent.invoke(user_query)
-                st.session_state.chat_history.append(('ai',response))
-                st.markdown(response['output'])
-            except Exception as e:
-                st.error(f"error: {e}")
+    else:
+        st.session_state.chat_history.append(('human', user_query))
+        memory.chat_memory.add_user_message(user_query)
+
+        with st.chat_message("human"):
+            st.markdown(user_query)
+        
+        with st.chat_message('ai'):
+            with st.spinner('Processing...'):
+                try:
+                    response = agent.invoke(user_query)
+                    if isinstance(response, dict):
+                        ai_response= response.get('output', str(response))
+                    else:
+                        ai_response=str(response)
+                    st.session_state.chat_history.append(('ai', ai_response))
+                    memory.chat_memory.add_ai_message(ai_response)
+
+                    st.markdown(ai_response)
+
+                except Exception as e:
+                    st.error(f'Error: {e}')
+
+st.sidebar.write(f"Conversation Exchanges: {len(st.session_state.chat_history) // 2} / {MAX_EXCHANGES}")
 
 
 
-                
 
 
 
