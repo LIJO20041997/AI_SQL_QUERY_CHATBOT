@@ -14,26 +14,26 @@ Streamlit Interface: Simple and interactive web interface for real-time interact
   - OpenAI API Key (for LLM)
 - Clone the Repository
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+  git clone <repository-url>
+  cd <repository-directory>
 - Install Dependencies
 ```bash
-pip install -r requirements.txt
+  pip install -r requirements.txt
 - Set Up Environment Variables
   - Create a .env file in the root directory with the following content:
 ```bash
-OPENAI_API_KEY=your_openai_api_key
-DB_NAME=your_database_name
-DB_PASSWORD=your_database_password
-DB_HOST=your_database_host
-DB_PORT=your_database_port
+  OPENAI_API_KEY=your_openai_api_key
+  DB_NAME=your_database_name
+  DB_PASSWORD=your_database_password
+  DB_HOST=your_database_host
+  DB_PORT=your_database_port
 Replace the placeholders with your actual database and OpenAI credentials.
 
 - Usage
   - Run the Streamlit App
 ```bash
-streamlit run app.py
-This will launch the application in your default web browser.
+  streamlit run main.py
+  This will launch the application in your default web browser.
 
 Interacting with the Chatbot
 Open the app in your browser.
