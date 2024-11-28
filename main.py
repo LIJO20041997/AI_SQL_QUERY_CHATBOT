@@ -1,13 +1,14 @@
 from langchain_openai import ChatOpenAI
-from langchain_community.utilities import SQLDatabase
-from langchain.agents.agent_types import AgentType
-from langchain.memory import ConversationBufferMemory
-from langchain.agents import initialize_agent, Tool
+from langchain_community.utilities import SQLDatabase # connect with a database
+from langchain.agents.agent_types import AgentType # specifies the types of agent to be used
+from langchain.memory import ConversationBufferMemory # storing coversation history
+from langchain.agents import initialize_agent, Tool 
 from dotenv import load_dotenv
 import os
 import streamlit as st
 load_dotenv()
 
+# function to connect with a database
 def init_database():
     db_name = os.getenv("DB_NAME")
     db_password = os.getenv("DB_PASSWORD")
@@ -18,24 +19,30 @@ def init_database():
     db = SQLDatabase.from_uri(db_uri)
     return db 
 
+# function to run sql queries
 def execute_sql_query(query):
     try:
         return db.run(query)
     except Exception as e:
         return f"error executing query: {e}"
     
-
+# Calls init_database to establish a database connection.
 db = init_database()
 
+# defining a tool for SQL queries
 sql_tool = Tool(
     name='SQLQueryTool',
     func=execute_sql_query,
-    description="Use this tool to execute SQL queries on the database. Provide the query in plain English, and it will return the result"
+    description="Use this tool to query database metadata or execute SQL queries. Example queries: "
+                "'List all tables in the database,' 'Show columns of the users table,' "
+                "'Find the highest transaction amount from transactions table.'"
 )
-
+# creating an instance of chatopenai
 llm = ChatOpenAI(temperature=0, model='gpt-4-0613')
+# creating a memory to store chat history
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
+# intialising the agent
 agent = initialize_agent(
     tools=[sql_tool],
     llm=llm,
@@ -43,7 +50,8 @@ agent = initialize_agent(
     memory=memory,
     verbose=True
 )
-    
+
+# streamlit setup
 st.set_page_config(page_title="AI_SQL_CHATBOT")
 st.header("Query Your Database")
 
