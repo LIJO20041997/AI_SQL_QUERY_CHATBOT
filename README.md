@@ -13,15 +13,15 @@ Streamlit Interface: Simple and interactive web interface for real-time interact
   - PostgreSQL database
   - OpenAI API Key (for LLM)
 - Clone the Repository
-bash
+```bash
 git clone <repository-url>
 cd <repository-directory>
 - Install Dependencies
-bash
+```bash
 pip install -r requirements.txt
 - Set Up Environment Variables
   - Create a .env file in the root directory with the following content:
-bash
+```bash
 OPENAI_API_KEY=your_openai_api_key
 DB_NAME=your_database_name
 DB_PASSWORD=your_database_password
@@ -31,7 +31,7 @@ Replace the placeholders with your actual database and OpenAI credentials.
 
 - Usage
   - Run the Streamlit App
-bash
+```bash
 streamlit run app.py
 This will launch the application in your default web browser.
 
