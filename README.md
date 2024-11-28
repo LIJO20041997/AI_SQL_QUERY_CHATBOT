@@ -14,7 +14,7 @@ Streamlit Interface: Simple and interactive web interface for real-time interact
   - OpenAI API Key (for LLM)
   - Clone the Repository
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/LIJO20041997/AI_SQL_QUERY_CHATBOT.git
     cd <repository-directory>
   - Install Dependencies
     ```bash
@@ -35,7 +35,4 @@ Streamlit Interface: Simple and interactive web interface for real-time interact
     streamlit run main.py
     This will launch the application in your default web browser.
 
-Interacting with the Chatbot
-Open the app in your browser.
-Input a natural language query in the chat interface (e.g., "What is the total sales amount for each month?").
-The chatbot will process the query, convert it into SQL, execute it on your database, and display the result.
+NOTE: While quering we need to give the right table names and column names for getting better results
